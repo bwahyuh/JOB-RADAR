@@ -4,6 +4,7 @@
 ![Snowflake Badge](https://img.shields.io/badge/Storage-Snowflake_Data_Warehouse-0093F5.svg?style=flat&logo=snowflake)
 ![Airflow Badge](https://img.shields.io/badge/Orchestration-Apache_Airflow-017CEE.svg?style=flat&logo=apacheairflow)
 ![Status Badge](https://img.shields.io/badge/Status-Active_Development-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## 📖 Project Overview
 
@@ -16,6 +17,7 @@ The Data Engineering landscape in Indonesia is evolving rapidly. Job description
 2.  **Skill Gap Detection:** Help engineers align their learning paths with actual market needs.
 3.  **ELT Demonstration:** Serve as a proof-of-concept for a modern, scalable **Extract, Load, Transform (ELT)** pipeline using industry-standard tools.
 
+---
 
 ## 🏗️ Architecture Blueprint
 
@@ -57,8 +59,6 @@ graph LR
     D -->|Query Insights| E
     F -.->|Trigger Schedule| B
     F -.->|Trigger Schedule| D
-
-```
 
 ### 🔄 Data Flow Description
 
