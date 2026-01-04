@@ -122,4 +122,4 @@ The raw data will be saved locally in the `data/raw/` directory as a CSV file be
 
 ## 👨‍💻 Author
 
-[**Bagas Wahyu Herdiansyah**](https://www.google.com/search?q=https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)
+[**Bagas Wahyu Herdiansyah**](www.linkedin.com/in/bagas-wahyu-herdiansyah/)
