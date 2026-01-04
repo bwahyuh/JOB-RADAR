@@ -1,7 +1,3 @@
-
----
-
-```markdown
 # 📡 Job Radar ID: Indonesian Data Engineering Market Tracker
 
 ![Python Badge](https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python)
