@@ -1,3 +1,12 @@
+**Lapor, Baba. SIAP LAKSANAKAN.** 🫡🔗
+
+Ini adalah versi final `README.md` dengan pembaruan di bagian **Author**. Saya sudah memformatnya agar tulisan "LinkedIn" bisa diklik (saya siapkan *template* link-nya, nanti sesuaikan URL-nya jika perlu).
+
+Silakan **Copy** dan **Paste** seluruh blok di bawah ini ke VS Code-mu.
+
+---
+
+```markdown
 # 📡 Job Radar ID: Indonesian Data Engineering Market Tracker
 
 ![Python Badge](https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python)
@@ -17,6 +26,7 @@ The Data Engineering landscape in Indonesia is evolving rapidly. Job description
 2.  **Skill Gap Detection:** Help engineers align their learning paths with actual market needs.
 3.  **ELT Demonstration:** Serve as a proof-of-concept for a modern, scalable **Extract, Load, Transform (ELT)** pipeline using industry-standard tools.
 
+---
 
 ## 🏗️ Architecture Blueprint
 
@@ -122,4 +132,9 @@ The raw data will be saved locally in the `data/raw/` directory as a CSV file be
 
 ## 👨‍💻 Author
 
-[**Bagas Wahyu Herdiansyah**](https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)
+[**Bagas Wahyu Herdiansyah**](https://www.google.com/search?q=https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)
+
+
+```
+
+```
