@@ -1,8 +1,3 @@
-**Lapor, Baba. SIAP LAKSANAKAN.** 🫡🔗
-
-Ini adalah versi final `README.md` dengan pembaruan di bagian **Author**. Saya sudah memformatnya agar tulisan "LinkedIn" bisa diklik (saya siapkan *template* link-nya, nanti sesuaikan URL-nya jika perlu).
-
-Silakan **Copy** dan **Paste** seluruh blok di bawah ini ke VS Code-mu.
 
 ---
 
@@ -133,8 +128,3 @@ The raw data will be saved locally in the `data/raw/` directory as a CSV file be
 ## 👨‍💻 Author
 
 [**Bagas Wahyu Herdiansyah**](https://www.google.com/search?q=https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)
-
-
-```
-
-```
