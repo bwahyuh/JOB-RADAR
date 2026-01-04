@@ -96,7 +96,7 @@ Clone the repository and set up the environment:
 
 ```bash
 # Clone repository
-git clone [https://github.com/yourusername/job-radar-id.git](https://github.com/yourusername/job-radar-id.git)
+git clone [https://github.com/bwahyuh/JOB-RADAR.git](https://github.com/bwahyuh/JOB-RADAR.git)
 
 # Create Virtual Environment
 python -m venv venv
