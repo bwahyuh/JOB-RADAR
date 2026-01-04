@@ -59,6 +59,7 @@ graph LR
     D -->|Query Insights| E
     F -.->|Trigger Schedule| B
     F -.->|Trigger Schedule| D
+```
 
 ### 🔄 Data Flow Description
 
