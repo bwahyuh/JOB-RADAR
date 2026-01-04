@@ -1,20 +1,19 @@
 #!/bin/bash
 
-echo "🚀 Memulai Setup Job Radar ID..."
+echo "🚀 Starting Job Radar ID Setup..."
 
-# 1. Cek apakah venv sudah ada
+# 1. Check if venv exists
 if [ -d "venv" ]; then
-    echo "✅ Virtual Environment ditemukan."
+    echo "✅ Virtual Environment found."
 else
-    echo "📦 Membuat Virtual Environment baru..."
+    echo "📦 Creating new Virtual Environment..."
     python3 -m venv venv
 fi
 
-# 2. Aktifkan Venv
+# 2. Activate Venv & Install
 source venv/bin/activate
 
-# 3. Install Dependencies
-echo "⬇️  Menginstall Dependencies dari requirements.txt..."
+echo "⬇️  Installing Dependencies from requirements.txt..."
 pip install -r requirements.txt
 
-echo "🎉 Setup Selesai! Jalankan 'source venv/bin/activate' untuk masuk."
+echo "🎉 Setup Complete! Run 'source venv/bin/activate' to start."
