@@ -33,7 +33,7 @@ graph LR
 
     %% The Flow
     subgraph Sources ["1. Data Sources"]
-        A[JobPortals (Web)]:::source
+        A["JobPortals (Web)"]:::source
     end
 
     subgraph Ingestion ["2. Extraction Layer"]
