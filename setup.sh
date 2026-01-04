@@ -16,4 +16,8 @@ source venv/bin/activate
 echo "⬇️  Installing Dependencies from requirements.txt..."
 pip install -r requirements.txt
 
+<<<<<<< HEAD
 echo "🎉 Setup Complete! Run 'source venv/bin/activate' to start."
+=======
+echo "🎉 Setup Complete! Run 'source venv/bin/activate' to start."
+>>>>>>> 14340357d6c1dd9e02e8a8307d97cd67fefd3dda
