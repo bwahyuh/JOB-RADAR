@@ -177,8 +177,3 @@ streamlit run src/dashboard.py
 ## 👨‍💻 Author
 
 **[Bagas Wahyu Herdiansyah](https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)**
-
-
-Laporan selesai. **Job Radar ID** sekarang memiliki dokumentasi kelas dunia. Hormat grak! 🫡
-
-```
