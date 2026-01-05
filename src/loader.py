@@ -8,15 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_latest_csv():
-    # Ambil file CSV terbaru di folder raw
+    # Get the latest CSV file in the raw folder
     list_of_files = glob.glob('data/raw/*.csv') 
     if not list_of_files:
         return None
     return max(list_of_files, key=os.path.getctime)
 
 def create_table_if_not_exists(conn):
-    print("🔨 Memeriksa Struktur Tabel...")
-    # Kita buat tabel sederhana dulu untuk menampung data
+    print("🔨 Checking Table Structure...")
+    # Updated: Table definition includes columns for AI & Vectors
     create_query = """
     CREATE TABLE IF NOT EXISTS RAW_DATA.JOB_POSTINGS (
         TITLE STRING,
@@ -26,28 +26,30 @@ def create_table_if_not_exists(conn):
         POSTED_DATE DATE,
         SCRAPED_AT TIMESTAMP,
         LINK STRING,
-        DESCRIPTION STRING
+        DESCRIPTION STRING,
+        EXTRACTED_SKILLS TEXT,                 -- Additional Column for AI
+        DESCRIPTION_VECTOR VECTOR(FLOAT, 1024) -- Additional Column for Vector
     );
     """
     conn.cursor().execute(create_query)
-    print("✅ Tabel RAW_DATA.JOB_POSTINGS Siap!")
+    print("✅ Table RAW_DATA.JOB_POSTINGS (Full Version) Ready!")
 
 def load_data():
-    print("🚀 MEMULAI OPERASI SKY LIFT...")
+    print("🚀 STARTING OPERATION SKY LIFT...")
     
     csv_file = get_latest_csv()
     if not csv_file:
-        print("❌ Error: Tidak ada file CSV!")
+        print("❌ Error: No CSV file found!")
         return
     
-    print(f"📦 Mengangkut kargo: {csv_file}")
+    print(f"📦 Hauling cargo: {csv_file}")
     
-    # Baca CSV
+    # Read CSV
     df = pd.read_csv(csv_file)
-    # Ubah nama kolom jadi KAPITAL (Wajib untuk Snowflake)
+    # Convert column names to UPPERCASE (Required for Snowflake)
     df.columns = [col.upper() for col in df.columns]
     
-    print(f"📊 Total Muatan: {len(df)} baris")
+    print(f"📊 Total Payload: {len(df)} rows")
 
     try:
         conn = snowflake.connector.connect(
@@ -57,12 +59,12 @@ def load_data():
             warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
             database=os.getenv('SNOWFLAKE_DATABASE'),
             schema=os.getenv('SNOWFLAKE_SCHEMA'),
-            role='DATA_ENGINEER_ROLE'  # <--- PENTING! Pakai seragam Engineer
+            role='DATA_ENGINEER_ROLE'  # <--- IMPORTANT! Use Engineer Role
         )
         
         create_table_if_not_exists(conn)
         
-        # Upload Data (Bulk Insert)
+        # Upload Data (Bulk Insert) - DEFAULT IS APPEND (SAFE FOR HISTORY)
         success, n_chunks, n_rows, _ = write_pandas(
             conn, 
             df, 
@@ -71,14 +73,14 @@ def load_data():
         )
         
         if success:
-            print(f"🎉 SUKSES BESAR! {n_rows} baris data berhasil mendarat di Snowflake.")
+            print(f"🎉 SUCCESS! {n_rows} rows landed safely in Snowflake.")
         else:
-            print("⚠️ Upload selesai tapi status meragukan. Cek Snowflake.")
+            print("⚠️ Upload finished but status is doubtful. Check Snowflake.")
             
         conn.close()
         
     except Exception as e:
-        print(f"❌ MISI GAGAL: {e}")
+        print(f"❌ MISSION FAILED: {e}")
 
 if __name__ == "__main__":
     load_data()
