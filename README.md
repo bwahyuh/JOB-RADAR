@@ -1,27 +1,39 @@
-# 📡 Job Radar ID: Indonesian Data Engineering Market Tracker
+# 📡 Job Radar ID: AI-Powered Data Engineering Market Tracker
 
 ![Python Badge](https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python)
 ![Snowflake Badge](https://img.shields.io/badge/Storage-Snowflake_Data_Warehouse-0093F5.svg?style=flat&logo=snowflake)
-![Airflow Badge](https://img.shields.io/badge/Orchestration-Apache_Airflow-017CEE.svg?style=flat&logo=apacheairflow)
-![Status Badge](https://img.shields.io/badge/Status-Active_Development-green.svg)
+![Streamlit Badge](https://img.shields.io/badge/Frontend-Streamlit-FF4B4B.svg?style=flat&logo=streamlit)
+![AI Badge](https://img.shields.io/badge/AI-Snowflake_Cortex-000000.svg?style=flat&logo=openai)
+![Status Badge](https://img.shields.io/badge/Status-Live_Deployment-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## 📖 Project Overview
 
 The Data Engineering landscape in Indonesia is evolving rapidly. Job descriptions are the single source of truth for understanding what skills companies actually demand versus hype.
 
-**Job Radar ID** is an end-to-end Data Engineering project designed to bring transparency to this market. It automates the collection of job postings from major portals (e.g., JobStreet, LinkedIn), ingests the raw data into a cloud data warehouse, and transforms it into actionable insights.
+**Job Radar ID** is an end-to-end Data Engineering project that brings transparency to this market. Unlike traditional trackers that rely on simple keyword matching, this project utilizes **Snowflake Cortex AI (LLM)** to intelligently read, understand, and extract specific Hard & Soft skills from unstructured job descriptions.
 
 **Primary Objectives:**
-1.  **Trend Analysis:** Identify real-time demand for specific technologies (e.g., Is demand for *Spark* growing faster than *Flink* in Jakarta?).
-2.  **Skill Gap Detection:** Help engineers align their learning paths with actual market needs.
-3.  **ELT Demonstration:** Serve as a proof-of-concept for a modern, scalable **Extract, Load, Transform (ELT)** pipeline using industry-standard tools.
+1.  **AI-Powered Extraction:** Use Large Language Models (Claude 3.5 Sonnet) to parse complex job descriptions.
+2.  **Quality Control:** Implement a "Gatekeeper" system to filter out irrelevant roles (e.g., Sales, Marketing) ensuring 100% Data Engineering relevance.
+3.  **ELT Demonstration:** Showcase a modern **Extract, Load, Transform (ELT)** pipeline using Snowflake's native AI capabilities.
+
+---
+
+## 🗺️ Project Roadmap
+
+- [x] **Phase 1: Ingestion Engine** (Scraper V3 with Role Gatekeeper)
+- [x] **Phase 2: Cloud Storage Setup** (Snowflake Warehouse & Database)
+- [x] **Phase 3: Data Loading** (Automated CSV to Snowflake Pipeline)
+- [x] **Phase 4: Transformation (The Brain)** (Skill Extraction using Snowflake Cortex/LLM)
+- [x] **Phase 5: Visualization** (Streamlit Dashboard Deployed)
+- [ ] **Phase 6: Orchestration** (Automating the flow with Apache Airflow - *Coming Soon*)
 
 ---
 
 ## 🏗️ Architecture Blueprint
 
-The system follows a modern **ELT paradigm**, prioritizing the secure storage of raw data before any transformation occurs. This ensures data lineage and allows for reprocessing historic data as business logic evolves.
+The system follows a modern **ELT paradigm**, leveraging Snowflake not just for storage, but as the primary compute engine for AI processing.
 
 ```mermaid
 graph LR
@@ -29,7 +41,8 @@ graph LR
     classDef source fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
     classDef ingestion fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
     classDef storage fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#1b5e20;
-    classDef serving fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
+    classDef ai fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
+    classDef serving fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#c62828;
 
     %% The Flow
     subgraph Sources ["1. Data Sources"]
@@ -37,36 +50,38 @@ graph LR
     end
 
     subgraph Ingestion ["2. Extraction Layer"]
-        B(Python Scraper Container):::ingestion
+        B(Python Scraper + Gatekeeper):::ingestion
     end
 
-    subgraph Warehouse ["3. Storage & Transformation (Snowflake)"]
-        C[(RAW_DB Stage)]:::storage
-        D[(ANALYTICS_DB Tables)]:::storage
+    subgraph Warehouse ["3. Snowflake Data Cloud"]
+        C[(RAW_DATA Table)]:::storage
+        D(Cortex AI / LLM):::ai
     end
 
     subgraph Serving ["4. Serving Layer"]
         E[Streamlit Dashboard]:::serving
     end
-    
-    %% Orchestration Node
-    F{Apache Airflow}:::ingestion
 
     %% Connections
     A -->|HTML/JSON| B
-    B -->|Load RAW Data| C
-    C -->|dbt/SQL Transform| D
-    D -->|Query Insights| E
-    F -.->|Trigger Schedule| B
-    F -.->|Trigger Schedule| D
+    B -->|Load Raw Data| C
+    C -->|Trigger Extraction| D
+    D -->|Update Skills Column| C
+    C -->|Query Insights| E
+
 ```
 
 ### 🔄 Data Flow Description
 
-1. **Extraction (The Scout):** A Python-based scraper (utilizing `requests` and `BeautifulSoup`) navigates target job portals, extracting job titles, companies, locations, and full descriptions.
-2. **Load (The Transport):** The raw, unprocessed data is immediately loaded into the **Snowflake Data Warehouse** into a staging area (`RAW_DB`). This preserves the original state of the data for auditability.
-3. **Transform (The Refinery):** Using SQL within Snowflake’s powerful compute engine, the raw data is cleaned, deduplicated, and enriched. Keywords (technologies, soft skills) are extracted from descriptions to create structured analytics tables (`ANALYTICS_DB`).
-4. **Orchestration (The Commander):** Apache Airflow manages the workflow dependencies, ensuring the scraper runs on a schedule and transformations only trigger after data is successfully loaded.
+1. **Extraction (The Scout):** A Python-based scraper fetches job listings. It includes a **Gatekeeper** logic that strictly filters titles (rejecting "Sales", "Marketing", etc.) to ensure data purity.
+2. **Load (The Transport):** Raw text data is loaded into `RAW_DATA.JOB_POSTINGS` in Snowflake.
+3. **AI Transformation (The Brain):** A Python script triggers **Snowflake Cortex (`claude-3-5-sonnet`)**. The LLM reads the full job description and extracts:
+* Hard Skills (Python, SQL, Spark)
+* Soft Skills (Communication, Leadership)
+* Domain Knowledge (Banking, ETL)
+
+
+4. **Visualization (The Face):** A Streamlit app connects to Snowflake, filters for unique job postings, and visualizes the top demanded skills in real-time.
 
 ---
 
@@ -74,11 +89,11 @@ graph LR
 
 | Domain | Technology | Justification |
 | --- | --- | --- |
-| **Ingestion Language** | Python 3.9+ | The standard for web scraping and data manipulation libraries. |
-| **Containerization** | Docker | Ensures the scraper runs consistently across local and cloud environments. |
-| **Data Warehouse** | Snowflake | Separates storage and compute, allowing scalable processing of raw JSON/text data. |
-| **Orchestration** | Apache Airflow | Industry standard for defining complex data pipelines as code (DAGs). |
-| **Visualization** | Streamlit | Rapid development of interactive data apps using pure Python. |
+| **Ingestion** | Python 3.9+ | Utilizes `requests` and `BeautifulSoup` for robust scraping. |
+| **Data Warehouse** | Snowflake | Scalable storage handling structured and semi-structured data. |
+| **AI / LLM** | **Snowflake Cortex** | Serverless access to **Claude 3.5 Sonnet** for high-accuracy text extraction (No external API keys needed). |
+| **Transformation** | SQL + Python | Logic defined in SQL, executed via Python connector. |
+| **Visualization** | Streamlit | Interactive dashboard deployed on Streamlit Community Cloud. |
 
 ---
 
@@ -87,8 +102,8 @@ graph LR
 ### 1. Prerequisites
 
 * Python 3.9+
-* Docker Desktop (Optional for containerization)
-* Snowflake Account (Trial or Standard)
+* Snowflake Account (Standard Edition or higher for Cortex support)
+* Git
 
 ### 2. Installation
 
@@ -96,7 +111,7 @@ Clone the repository and set up the environment:
 
 ```bash
 # Clone repository
-git clone [https://github.com/bwahyuh/JOB-RADAR.git](https://github.com/bwahyuh/JOB-RADAR.git)
+git clone https://github.com/bwahyuh/JOB-RADAR.git
 
 # Create Virtual Environment
 python -m venv venv
@@ -107,19 +122,63 @@ pip install -r requirements.txt
 
 ```
 
-### 3. Usage
+### 3. Configuration 🔐
 
-Run the scraper to fetch the latest job listings:
+Create a `.env` file in the root directory. **Do not commit this file.**
+
+```ini
+SNOWFLAKE_USER=your_username
+SNOWFLAKE_PASSWORD=your_password
+SNOWFLAKE_ACCOUNT=your_account_locator
+SNOWFLAKE_WAREHOUSE=JOB_RADAR_WH
+SNOWFLAKE_DATABASE=JOB_RADAR_DB
+SNOWFLAKE_SCHEMA=RAW_DATA
+
+```
+
+### 4. Running the Pipeline
+
+**Step 1: Scrape Data**
+Fetch the latest job listings (Gatekeeper active).
 
 ```bash
 python src/scraper.py
 
 ```
 
-The raw data will be saved locally in the `data/raw/` directory as a CSV file before being loaded into Snowflake.
+**Step 2: Load to Cloud**
+Upload raw CSV to Snowflake.
+
+```bash
+python src/loader.py
+
+```
+
+**Step 3: Run AI Extraction**
+Trigger Snowflake Cortex to extract skills from descriptions.
+
+```bash
+python src/transformer.py
+
+```
+
+*Note: This utilizes Snowflake credits.*
+
+**Step 4: Launch Dashboard**
+View the results locally.
+
+```bash
+streamlit run src/dashboard.py
+
+```
 
 ---
 
 ## 👨‍💻 Author
 
-[**Bagas Wahyu Herdiansyah**](https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)
+**[Bagas Wahyu Herdiansyah](https://www.linkedin.com/in/bagas-wahyu-herdiansyah/)**
+
+
+Laporan selesai. **Job Radar ID** sekarang memiliki dokumentasi kelas dunia. Hormat grak! 🫡
+
+```
