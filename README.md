@@ -43,6 +43,7 @@ graph LR
     classDef storage fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#1b5e20;
     classDef ai fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
     classDef serving fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#c62828;
+    classDef future fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,stroke-dasharray: 5 5,color:#616161;
 
     %% The Flow
     subgraph Sources ["1. Data Sources"]
@@ -61,13 +62,22 @@ graph LR
     subgraph Serving ["4. Serving Layer"]
         E[Streamlit Dashboard]:::serving
     end
+    
+    %% Future Automation Node
+    subgraph Orchestration ["5. Automation (Coming Soon)"]
+        F{{Apache Airflow}}:::future
+    end
 
-    %% Connections
+    %% Connections (Active Paths)
     A -->|HTML/JSON| B
     B -->|Load Raw Data| C
     C -->|Trigger Extraction| D
     D -->|Update Skills Column| C
     C -->|Query Insights| E
+    
+    %% Future Connections (Planned)
+    F -.->|Daily Schedule| B
+    F -.->|Trigger Analysis| D
 
 ```
 
