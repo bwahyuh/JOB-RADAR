@@ -56,25 +56,25 @@ graph LR
     end
 
     subgraph Ingestion ["3. Extraction Layer"]
-        B(Python Scraper + Gatekeeper):::ingestion
+        B("Python Scraper + Gatekeeper"):::ingestion
     end
 
     subgraph Warehouse ["4. Snowflake Data Cloud"]
-        C[(RAW_DATA Table)]:::storage
-        D(Cortex AI / LLM):::ai
+        C[("RAW_DATA Table")]:::storage
+        D("Cortex AI / LLM"):::ai
     end
 
     subgraph Serving ["5. Serving Layer"]
-        E[Streamlit Dashboard]:::serving
+        E["Streamlit Dashboard"]:::serving
     end
     
-    %% Connections
-    F -->|Cron Schedule (06:00)| B
-    A -->|HTML/JSON| B
-    B -->|Incremental Load| C
-    C -->|Trigger Extraction| D
-    D -->|Update Skills Column| C
-    C -->|Query Insights| E
+    %% Connections (Fixed Syntax with Quotes)
+    F -->|"Cron Schedule 06.00"| B;
+    A -->|"HTML/JSON"| B;
+    B -->|"Incremental Load"| C;
+    C -->|"Trigger Extraction"| D;
+    D -->|"Update Skills Column"| C;
+    C -->|"Query Insights"| E;
 
 ```
 
