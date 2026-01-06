@@ -1,0 +1,56 @@
+name: Daily Job Radar Pipeline
+
+# SCHEDULE: Runs automatically every day at 23:00 UTC (06:00 WIB)
+on:
+  schedule:
+    - cron: '0 23 * * *'
+  # Manual trigger for testing purposes
+  workflow_dispatch:
+
+jobs:
+  run-data-pipeline:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Checkout Code from Repository
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Python Environment
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip' # Enable caching for faster requirements installation
+
+      # 3. Install Dependencies
+      - name: 📦 Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # 4. STEP 1: SCRAPING (Extract data from JobStreet)
+      - name: 🕵️ Run Scraper (Extract)
+        run: python src/scraper.py
+
+      # 5. STEP 2: LOADING (Upload to Snowflake with Deduplication)
+      # Injecting GitHub Secrets into Environment Variables for security
+      - name: 🚚 Run Loader (Load)
+        env:
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+        run: python src/loader.py
+
+      # 6. STEP 3: TRANSFORMING (AI Extraction via Snowflake Cortex)
+      - name: 🧠 Run Transformer (AI Transform)
+        env:
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+        run: python src/transformer.py

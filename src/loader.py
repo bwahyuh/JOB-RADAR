@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_latest_csv():
-    # Get the latest CSV file in the raw folder
+    # Get the latest CSV file from the raw data folder
     list_of_files = glob.glob('data/raw/*.csv') 
     if not list_of_files:
         return None
@@ -16,7 +16,7 @@ def get_latest_csv():
 
 def create_table_if_not_exists(conn):
     print("🔨 Checking Table Structure...")
-    # Updated: Table definition includes columns for AI & Vectors
+    # Ensure table exists. LINK column is used for deduplication logic.
     create_query = """
     CREATE TABLE IF NOT EXISTS RAW_DATA.JOB_POSTINGS (
         TITLE STRING,
@@ -27,30 +27,45 @@ def create_table_if_not_exists(conn):
         SCRAPED_AT TIMESTAMP,
         LINK STRING,
         DESCRIPTION STRING,
-        EXTRACTED_SKILLS TEXT,                 -- Additional Column for AI
-        DESCRIPTION_VECTOR VECTOR(FLOAT, 1024) -- Additional Column for Vector
+        EXTRACTED_SKILLS TEXT,                 
+        DESCRIPTION_VECTOR VECTOR(FLOAT, 1024) 
     );
     """
     conn.cursor().execute(create_query)
-    print("✅ Table RAW_DATA.JOB_POSTINGS (Full Version) Ready!")
+
+def get_existing_links(conn):
+    """
+    Fetch existing Job Links from Snowflake to prevent duplicates.
+    """
+    print("🔍 Checking existing jobs in Warehouse...")
+    try:
+        cur = conn.cursor()
+        # Select all LINKS currently in storage
+        cur.execute("SELECT LINK FROM RAW_DATA.JOB_POSTINGS")
+        # Convert to a Set for O(1) lookup performance
+        existing_links = set(row[0] for row in cur.fetchall())
+        print(f"   ↳ Found {len(existing_links)} existing jobs.")
+        return existing_links
+    except Exception as e:
+        # If table doesn't exist or is empty, return empty set
+        return set()
 
 def load_data():
-    print("🚀 STARTING OPERATION SKY LIFT...")
+    print("🚀 STARTING OPERATION SKY LIFT (INCREMENTAL)...")
     
     csv_file = get_latest_csv()
     if not csv_file:
-        print("❌ Error: No CSV file found!")
+        print("❌ Error: No CSV file found in data/raw/ !")
         return
     
-    print(f"📦 Hauling cargo: {csv_file}")
+    print(f"📦 Source Data: {csv_file}")
     
-    # Read CSV
+    # 1. READ CSV
     df = pd.read_csv(csv_file)
-    # Convert column names to UPPERCASE (Required for Snowflake)
-    df.columns = [col.upper() for col in df.columns]
+    df.columns = [col.upper() for col in df.columns] # Snowflake requires UPPERCASE columns
     
-    print(f"📊 Total Payload: {len(df)} rows")
-
+    original_count = len(df)
+    
     try:
         conn = snowflake.connector.connect(
             user=os.getenv('SNOWFLAKE_USER'),
@@ -59,23 +74,39 @@ def load_data():
             warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
             database=os.getenv('SNOWFLAKE_DATABASE'),
             schema=os.getenv('SNOWFLAKE_SCHEMA'),
-            role='DATA_ENGINEER_ROLE'  # <--- IMPORTANT! Use Engineer Role
+            role='DATA_ENGINEER_ROLE'
         )
         
+        # 2. CHECK TABLE STRUCTURE
         create_table_if_not_exists(conn)
         
-        # Upload Data (Bulk Insert) - DEFAULT IS APPEND (SAFE FOR HISTORY)
-        success, n_chunks, n_rows, _ = write_pandas(
-            conn, 
-            df, 
-            "JOB_POSTINGS", 
-            quote_identifiers=False
-        )
+        # 3. DEDUPLICATION LOGIC (Incremental Load)
+        existing_links = get_existing_links(conn)
         
-        if success:
-            print(f"🎉 SUCCESS! {n_rows} rows landed safely in Snowflake.")
+        # Filter: Keep only rows where 'LINK' is NOT in 'existing_links'
+        if not df.empty and 'LINK' in df.columns:
+            df_new = df[~df['LINK'].isin(existing_links)]
         else:
-            print("⚠️ Upload finished but status is doubtful. Check Snowflake.")
+            df_new = pd.DataFrame() 
+            
+        new_count = len(df_new)
+        print(f"📊 Filter Report: {original_count} Raw -> {new_count} New Unique Jobs")
+        
+        # 4. UPLOAD ONLY NEW DATA
+        if new_count > 0:
+            print("🚚 Uploading new data to Snowflake...")
+            success, n_chunks, n_rows, _ = write_pandas(
+                conn, 
+                df_new, 
+                "JOB_POSTINGS", 
+                quote_identifiers=False
+            )
+            if success:
+                print(f"🎉 SUCCESS! Added {n_rows} new jobs to Warehouse.")
+            else:
+                print("⚠️ Upload finished but status is doubtful.")
+        else:
+            print("zzz... No new jobs to upload today. Warehouse is up to date.")
             
         conn.close()
         
