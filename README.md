@@ -14,6 +14,8 @@ The Data Engineering landscape in Indonesia is evolving rapidly. Job description
 
 **Job Radar ID** is an end-to-end Data Engineering project that brings transparency to this market. Unlike traditional trackers that rely on simple keyword matching, this project utilizes **Snowflake Cortex AI (LLM)** to intelligently read, understand, and extract specific Hard & Soft skills from unstructured job descriptions.
 
+[View Demo](https://bwahyuh-job-radar.streamlit.app/)
+
 **Primary Objectives:**
 1.  **AI-Powered Extraction:** Use Large Language Models (Claude 3.5 Sonnet via Snowflake Cortex) to parse complex job descriptions.
 2.  **Automated Incremental Load:** A fully automated pipeline that fetches new jobs daily without duplicates.
